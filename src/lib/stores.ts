@@ -1,6 +1,9 @@
 import { writable } from 'svelte/store';
 import type { MatchEvent, ViewMode } from './types.js';
 
+const STORAGE_KEY_PUBKEY = 'choke:organizer-pubkey';
+const STORAGE_KEY_THEME = 'choke:theme';
+
 /** Map of match id → MatchEvent, reactive store */
 export const matchesMap = writable<Map<string, MatchEvent>>(new Map());
 
@@ -18,6 +21,28 @@ export const isLoading = writable<boolean>(false);
 
 /** Theme: 'dark' | 'light' */
 export const theme = writable<'dark' | 'light'>('dark');
+
+/** Save organizer pubkey to localStorage */
+export function persistPubkey(hex: string): void {
+	if (typeof localStorage !== 'undefined') {
+		localStorage.setItem(STORAGE_KEY_PUBKEY, hex);
+	}
+}
+
+/** Load saved organizer pubkey from localStorage */
+export function loadPersistedPubkey(): string | null {
+	if (typeof localStorage !== 'undefined') {
+		return localStorage.getItem(STORAGE_KEY_PUBKEY);
+	}
+	return null;
+}
+
+/** Clear saved organizer pubkey from localStorage */
+export function clearPersistedPubkey(): void {
+	if (typeof localStorage !== 'undefined') {
+		localStorage.removeItem(STORAGE_KEY_PUBKEY);
+	}
+}
 
 /**
  * Upsert a match into the store.

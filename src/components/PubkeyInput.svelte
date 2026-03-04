@@ -1,20 +1,35 @@
 <script lang="ts">
-	import { decodePubkey, subscribeToMatches, closeSubscription } from '$lib/nostr.js';
-	import { activePubkey, clearMatches, debugMode, isLoading, matchesMap } from '$lib/stores.js';
+	import { onMount } from 'svelte';
+	import { decodePubkey, encodePubkey, subscribeToMatches, closeSubscription } from '$lib/nostr.js';
+	import {
+		activePubkey,
+		clearMatches,
+		debugMode,
+		isLoading,
+		matchesMap,
+		persistPubkey,
+		loadPersistedPubkey,
+		clearPersistedPubkey
+	} from '$lib/stores.js';
 	import { getDebugMatches } from '$lib/debug-matches.js';
 	import type { MatchEvent } from '$lib/types.js';
 
 	let inputValue = $state('');
 	let error = $state('');
 
+	function connectToPubkey(hex: string): void {
+		clearMatches();
+		debugMode.set(false);
+		activePubkey.set(hex);
+		persistPubkey(hex);
+		subscribeToMatches(hex);
+	}
+
 	function handleLoad(): void {
 		error = '';
 		try {
 			const hex = decodePubkey(inputValue);
-			clearMatches();
-			debugMode.set(false);
-			activePubkey.set(hex);
-			subscribeToMatches(hex);
+			connectToPubkey(hex);
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Invalid pubkey';
 		}
@@ -24,6 +39,7 @@
 		error = '';
 		closeSubscription();
 		clearMatches();
+		clearPersistedPubkey();
 		debugMode.set(true);
 		activePubkey.set('debug');
 		isLoading.set(false);
@@ -35,6 +51,7 @@
 	function handleDisconnect(): void {
 		closeSubscription();
 		clearMatches();
+		clearPersistedPubkey();
 		debugMode.set(false);
 		activePubkey.set('');
 		inputValue = '';
@@ -42,12 +59,34 @@
 	}
 
 	let connected = $state(false);
+	let connectedDisplay = $state('');
 
 	$effect(() => {
 		const unsub = activePubkey.subscribe((pk) => {
 			connected = pk !== '';
+			if (pk && pk !== 'debug') {
+				try {
+					connectedDisplay = encodePubkey(pk);
+				} catch {
+					connectedDisplay = pk.slice(0, 8) + '...' + pk.slice(-8);
+				}
+			} else {
+				connectedDisplay = '';
+			}
 		});
 		return unsub;
+	});
+
+	onMount(() => {
+		const saved = loadPersistedPubkey();
+		if (saved && saved.length > 0) {
+			try {
+				inputValue = encodePubkey(saved);
+			} catch {
+				inputValue = saved;
+			}
+			connectToPubkey(saved);
+		}
 	});
 </script>
 
@@ -88,7 +127,7 @@
 		<div class="flex items-center justify-between rounded-lg border px-4 py-2" style="background-color: var(--bg-input); border-color: var(--border-color);">
 			<div class="flex items-center gap-2 text-sm" style="color: var(--text-secondary);">
 				<span class="h-2 w-2 rounded-full" style="background-color: var(--color-green-live);"></span>
-				<span>Connected</span>
+				<span class="truncate max-w-xs font-mono text-xs">{connectedDisplay || 'Connected'}</span>
 			</div>
 			<button
 				onclick={handleDisconnect}
