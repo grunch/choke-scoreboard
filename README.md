@@ -67,9 +67,7 @@ Tiebreakers: Advantages → Fewer Penalties
 - **Content:** JSON with match fields
 
 Default relays:
-- `wss://relay.mostro.network`
-- `wss://nos.lol`
-- `wss://relay.damus.io`
+- `wss://relay.mostro.network` (kind 31415 is non-standard; most relays reject it)
 
 ## Documentation
 

@@ -9,9 +9,7 @@ const MATCH_EVENT_KIND = 31415;
 
 /** Default relay list */
 const DEFAULT_RELAYS = [
-	'wss://relay.mostro.network',
-	'wss://nos.lol',
-	'wss://relay.damus.io'
+	'wss://relay.mostro.network'
 ];
 
 let pool: SimplePool | null = null;
