@@ -1,0 +1,56 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-navy: #121A2E;
+  --color-navy-light: #1a2540;
+  --color-navy-lighter: #243054;
+  --color-green-live: #1BA34E;
+  --color-gold: #F5B800;
+  --color-red-penalty: #C0392B;
+  --color-gray-muted: #6B7280;
+}
+
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes glow-green {
+  0%, 100% { box-shadow: 0 0 5px rgba(27, 163, 78, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(27, 163, 78, 0.6); }
+}
+
+@utility animate-pulse-live {
+  animation: pulse-live 1.5s ease-in-out infinite;
+}
+
+@utility animate-glow-green {
+  animation: glow-green 2s ease-in-out infinite;
+}
+
+:root {
+  --bg-primary: #121A2E;
+  --bg-secondary: #1a2540;
+  --bg-card: #1a2540;
+  --bg-input: #243054;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+}
+
+:root.light {
+  --bg-primary: #f3f4f6;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-input: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #d1d5db;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

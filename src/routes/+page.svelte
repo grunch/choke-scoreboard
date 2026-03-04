@@ -1,0 +1,101 @@
+<script lang="ts">
+	import PubkeyInput from '../components/PubkeyInput.svelte';
+	import MatchCard from '../components/MatchCard.svelte';
+	import { matchesMap, viewMode, isLoading, activePubkey, getSortedMatches } from '$lib/stores.js';
+	import type { MatchEvent, ViewMode } from '$lib/types.js';
+
+	let matches = $state<MatchEvent[]>([]);
+	let loading = $state(false);
+	let connected = $state(false);
+	let currentViewMode = $state<ViewMode>('compact');
+
+	$effect(() => {
+		const unsub = matchesMap.subscribe((map) => {
+			matches = getSortedMatches(map);
+		});
+		return unsub;
+	});
+
+	$effect(() => {
+		const unsub = isLoading.subscribe((v) => {
+			loading = v;
+		});
+		return unsub;
+	});
+
+	$effect(() => {
+		const unsub = activePubkey.subscribe((pk) => {
+			connected = pk !== '';
+		});
+		return unsub;
+	});
+
+	$effect(() => {
+		const unsub = viewMode.subscribe((v) => {
+			currentViewMode = v;
+		});
+		return unsub;
+	});
+
+	function toggleViewMode(): void {
+		viewMode.update((v) => (v === 'compact' ? 'broadcast' : 'compact'));
+	}
+</script>
+
+<svelte:head>
+	<title>🥋 Choke Scoreboard</title>
+</svelte:head>
+
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-6">
+	<PubkeyInput />
+
+	{#if connected}
+		<!-- View mode toggle -->
+		<div class="flex items-center justify-between">
+			<p class="text-sm" style="color: var(--text-secondary);">
+				{matches.length} match{matches.length !== 1 ? 'es' : ''}
+			</p>
+			<button
+				onclick={toggleViewMode}
+				class="rounded-md px-3 py-1.5 text-xs font-medium transition-colors hover:opacity-80"
+				style="background-color: var(--bg-input); color: var(--text-secondary);"
+			>
+				{currentViewMode === 'compact' ? '📺 Broadcast' : '📋 Compact'}
+			</button>
+		</div>
+
+		{#if loading}
+			<!-- Loading spinner -->
+			<div class="flex flex-col items-center justify-center py-16">
+				<div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" style="border-color: var(--border-color); border-top-color: var(--color-green-live);"></div>
+				<p class="mt-4 text-sm" style="color: var(--text-secondary);">Connecting to relays...</p>
+			</div>
+		{:else if matches.length === 0}
+			<!-- Empty state -->
+			<div class="flex flex-col items-center justify-center py-16">
+				<span class="text-5xl">🥋</span>
+				<p class="mt-4 text-lg font-medium" style="color: var(--text-secondary);">No matches found</p>
+				<p class="mt-1 text-sm" style="color: var(--text-secondary);">
+					Waiting for match events from the organizer...
+				</p>
+			</div>
+		{:else}
+			<!-- Match list -->
+			<div class="grid gap-4 {currentViewMode === 'broadcast' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}">
+				{#each matches as match (match.id)}
+					<MatchCard {match} mode={currentViewMode} />
+				{/each}
+			</div>
+		{/if}
+	{:else}
+		<!-- Welcome state -->
+		<div class="flex flex-col items-center justify-center py-16 text-center">
+			<span class="text-6xl">🥋</span>
+			<h2 class="mt-4 text-2xl font-bold" style="color: var(--text-primary);">BJJ Match Scoreboard</h2>
+			<p class="mt-2 max-w-md text-sm" style="color: var(--text-secondary);">
+				Enter a tournament organizer's Nostr public key to subscribe to live match
+				scores, or try Debug Mode to see example matches.
+			</p>
+		</div>
+	{/if}
+</div>
