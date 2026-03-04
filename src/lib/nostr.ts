@@ -18,16 +18,16 @@ let pool: SimplePool | null = null;
 let activeSubCloser: SubCloser | null = null;
 
 /**
- * Decode an npub or hex pubkey string to hex.
- * Throws if the input is invalid.
- */
-/**
  * Encode a hex pubkey to npub format.
  */
 export function encodePubkey(hex: string): string {
 	return nip19.npubEncode(hex);
 }
 
+/**
+ * Decode an npub or hex pubkey string to hex.
+ * Throws if the input is invalid.
+ */
 export function decodePubkey(input: string): string {
 	const trimmed = input.trim();
 

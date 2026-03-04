@@ -70,6 +70,8 @@
 				} catch {
 					connectedDisplay = pk.slice(0, 8) + '...' + pk.slice(-8);
 				}
+			} else {
+				connectedDisplay = '';
 			}
 		});
 		return unsub;
