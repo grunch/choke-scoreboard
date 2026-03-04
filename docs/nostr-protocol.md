@@ -47,9 +47,7 @@ Since multiple relays may send the same event:
 
 | Relay | Purpose |
 |-------|---------|
-| `wss://relay.mostro.network` | Primary, Mostro community relay |
-| `wss://nos.lol` | Popular general-purpose relay |
-| `wss://relay.damus.io` | Widely used Nostr relay |
+| `wss://relay.mostro.network` | Primary relay — kind 31415 is non-standard, most relays reject it |
 
 ## Connection Management
 
