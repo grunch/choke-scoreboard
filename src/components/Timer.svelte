@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { MatchEvent } from '$lib/types.js';
 	import { formatTime, getRemainingSeconds, isTimerWarning } from '$lib/scoring.js';
 
@@ -32,21 +31,20 @@
 		expired = match.status === 'in-progress' && getRemainingSeconds(match) === 0;
 	}
 
-	onMount(() => {
+	// Manage the countdown interval reactively.
+	// Runs whenever status, start_at or duration changes (e.g. waiting → in-progress).
+	// Starts the interval when in-progress, clears it on any other status change.
+	$effect(() => {
+		void match.status;
+		void match.start_at;
+		void match.duration;
+
 		updateTimer();
+
 		if (match.status !== 'in-progress') return;
 
 		const interval = setInterval(updateTimer, 1000);
 		return () => clearInterval(interval);
-	});
-
-	// Re-compute when match prop changes externally
-	$effect(() => {
-		// Access match fields to create dependency
-		void match.status;
-		void match.start_at;
-		void match.duration;
-		updateTimer();
 	});
 </script>
 
