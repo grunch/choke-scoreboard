@@ -5,13 +5,19 @@
 	interface Props {
 		match: MatchEvent;
 		large?: boolean;
+		/** Typography override. When set, the caller owns font family and size. */
+		class?: string;
+		/** Base color when the timer is neither in warning nor expired. */
+		tone?: 'muted' | 'bright';
 	}
 
-	let { match, large = false }: Props = $props();
+	let { match, large = false, class: typography = '', tone = 'muted' }: Props = $props();
 
 	let displayTime = $state(computeDisplay());
 	let warning = $state(false);
 	let expired = $state(false);
+
+	let baseColor = $derived(tone === 'bright' ? '#ffffff' : 'var(--text-secondary)');
 
 	function computeDisplay(): string {
 		switch (match.status) {
@@ -49,8 +55,13 @@
 </script>
 
 <div
-	class="font-mono font-bold tracking-wider {large ? 'text-4xl' : 'text-xl'} {warning ? 'animate-pulse-live' : ''}"
-	style="color: {warning ? 'var(--color-gold, #F5B800)' : expired ? 'var(--color-red-penalty, #C0392B)' : 'var(--text-secondary)'}"
+	class="font-bold tabular-nums tracking-wider {typography ||
+		`font-mono ${large ? 'text-4xl' : 'text-xl'}`} {warning
+		? tone === 'bright'
+			? 'animate-tick'
+			: 'animate-pulse-live'
+		: ''}"
+	style="color: {warning ? 'var(--color-gold, #F5B800)' : expired ? 'var(--color-red-penalty, #C0392B)' : baseColor}"
 >
 	{displayTime}
 </div>

@@ -20,12 +20,61 @@
   50% { box-shadow: 0 0 20px rgba(27, 163, 78, 0.6); }
 }
 
+/* Broadcast split view (design 1A) */
+@keyframes scorepop {
+  0% { transform: scale(0.5); opacity: 0; }
+  55% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes liveblink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+@keyframes tick {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+
+@keyframes sweep-in {
+  0% { transform: translate(-50%, -38%); opacity: 0; }
+  100% { transform: translate(-50%, -50%); opacity: 1; }
+}
+
 @utility animate-pulse-live {
   animation: pulse-live 1.5s ease-in-out infinite;
 }
 
 @utility animate-glow-green {
   animation: glow-green 2s ease-in-out infinite;
+}
+
+@utility animate-scorepop {
+  animation: scorepop 0.55s cubic-bezier(0.2, 1.35, 0.35, 1);
+}
+
+@utility animate-liveblink {
+  animation: liveblink 1.1s infinite;
+}
+
+@utility animate-tick {
+  animation: tick 0.9s infinite;
+}
+
+@utility animate-sweep-in {
+  animation: sweep-in 0.55s cubic-bezier(0.2, 1.2, 0.35, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scorepop,
+  .animate-liveblink,
+  .animate-tick,
+  .animate-sweep-in,
+  .animate-pulse-live,
+  .animate-glow-green {
+    animation: none;
+  }
 }
 
 :root {
