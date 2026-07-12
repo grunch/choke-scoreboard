@@ -40,6 +40,30 @@ export function getLeader(match: MatchEvent): 0 | 1 | 2 {
 }
 
 /**
+ * Describe how a finished match was decided.
+ *
+ * Nostr events carry no explicit "method" field, so the result is derived
+ * from the same tiebreaker order used by getLeader().
+ */
+export function getWinMethod(match: MatchEvent): { method: string; detail: string } {
+	const s1 = getF1Score(match);
+	const s2 = getF2Score(match);
+	const scoreLine = `${Math.max(s1, s2)} × ${Math.min(s1, s2)}`;
+
+	if (s1 !== s2) return { method: 'POINTS', detail: scoreLine };
+
+	if (match.f1_adv !== match.f2_adv) {
+		return { method: 'ADVANTAGE', detail: `Tied ${scoreLine} — decided on advantages` };
+	}
+
+	if (match.f1_pen !== match.f2_pen) {
+		return { method: 'PENALTY', detail: `Tied ${scoreLine} — decided on penalties` };
+	}
+
+	return { method: 'DRAW', detail: `Tied ${scoreLine}` };
+}
+
+/**
  * Calculate remaining time in seconds for an in-progress match.
  * Returns 0 if time has expired.
  */
