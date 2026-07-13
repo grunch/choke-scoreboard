@@ -16,6 +16,17 @@ const DEFAULT_RELAYS = [
 let pool: SimplePool | null = null;
 let activeSubCloser: SubCloser | null = null;
 
+/** Pubkey of the live subscription, so the watchdog knows what to restore */
+let currentPubkey = '';
+let watchdogHandle: ReturnType<typeof setInterval> | null = null;
+let lastSubscribeAt = 0;
+
+/** How often to check that the relay connection is still alive */
+const WATCHDOG_INTERVAL_MS = 15_000;
+
+/** Give a fresh subscription time to connect before the watchdog judges it dead */
+const WATCHDOG_GRACE_MS = 20_000;
+
 /**
  * Encode a hex pubkey to npub format.
  */
@@ -100,16 +111,82 @@ function parseMatchEvent(event: {
 	}
 }
 
+/** True when we have no pool, or any relay in it is not connected. */
+function hasDeadRelay(): boolean {
+	if (!pool) return true;
+
+	const statuses = Array.from(pool.listConnectionStatus().values());
+	if (statuses.length < DEFAULT_RELAYS.length) return true;
+
+	return statuses.some((connected) => !connected);
+}
+
+/**
+ * Re-subscribe if the relay connection has dropped.
+ *
+ * nostr-tools retries on its own, but it gives up permanently once a retry
+ * fails (its `ws.onerror` sets skipReconnection), which is exactly what happens
+ * when a machine wakes before the network is back. This is the backstop: it
+ * rebuilds the subscription from scratch whenever the socket is not connected.
+ */
+function ensureSubscribed(): void {
+	if (!currentPubkey) return;
+	if (Date.now() - lastSubscribeAt < WATCHDOG_GRACE_MS) return;
+	if (!hasDeadRelay()) return;
+
+	subscribeToMatches(currentPubkey, { showLoading: false });
+}
+
+function handleVisibilityChange(): void {
+	if (document.visibilityState === 'visible') ensureSubscribed();
+}
+
+function startWatchdog(): void {
+	if (typeof window === 'undefined') return;
+
+	watchdogHandle = setInterval(ensureSubscribed, WATCHDOG_INTERVAL_MS);
+	// A dropped connection is most likely to be noticed exactly when the network
+	// returns or the user comes back to the tab, so react to those immediately
+	// instead of waiting out the interval.
+	window.addEventListener('online', ensureSubscribed);
+	document.addEventListener('visibilitychange', handleVisibilityChange);
+}
+
+function stopWatchdog(): void {
+	if (typeof window === 'undefined') return;
+
+	if (watchdogHandle) {
+		clearInterval(watchdogHandle);
+		watchdogHandle = null;
+	}
+	window.removeEventListener('online', ensureSubscribed);
+	document.removeEventListener('visibilitychange', handleVisibilityChange);
+}
+
 /**
  * Subscribe to match events from a specific organizer pubkey.
  * Automatically deduplicates by match id, keeping the newest created_at.
+ *
+ * Stays subscribed across dropped connections: the pool pings and reconnects,
+ * and a watchdog rebuilds the subscription if that fails.
  */
-export function subscribeToMatches(pubkeyHex: string): void {
+export function subscribeToMatches(
+	pubkeyHex: string,
+	{ showLoading = true }: { showLoading?: boolean } = {}
+): void {
 	// Clean up existing subscription
 	closeSubscription();
 
-	pool = new SimplePool();
-	isLoading.set(true);
+	currentPubkey = pubkeyHex;
+	lastSubscribeAt = Date.now();
+
+	// enablePing keeps the socket alive (and detects silently dropped ones);
+	// enableReconnect re-opens it and refires the REQ. Both default to false, and
+	// without them a closed socket leaves the page listening to nothing until reload.
+	pool = new SimplePool({ enablePing: true, enableReconnect: true });
+
+	// A reconnect must not blank out the matches already on screen behind a spinner.
+	if (showLoading) isLoading.set(true);
 
 	const since = Math.floor(Date.now() / 1000) - MATCH_MAX_AGE_SECONDS;
 
@@ -138,6 +215,7 @@ export function subscribeToMatches(pubkeyHex: string): void {
 	);
 
 	activeSubCloser = sub;
+	startWatchdog();
 
 	// Set loading to false after timeout in case EOSE never fires
 	setTimeout(() => {
@@ -149,6 +227,9 @@ export function subscribeToMatches(pubkeyHex: string): void {
  * Close active subscription and pool connections.
  */
 export function closeSubscription(): void {
+	stopWatchdog();
+	currentPubkey = '';
+
 	if (activeSubCloser) {
 		activeSubCloser.close();
 		activeSubCloser = null;
