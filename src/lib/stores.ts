@@ -65,6 +65,18 @@ export function clearMatches(): void {
 }
 
 /**
+ * Whether a match is still inside the visible age window.
+ * Matches outside it must not be rendered anywhere.
+ */
+export function isMatchFresh(
+	match: MatchEvent | undefined,
+	nowSeconds: number = Math.floor(Date.now() / 1000)
+): boolean {
+	if (!match) return false;
+	return (match.created_at ?? 0) >= nowSeconds - MATCH_MAX_AGE_SECONDS;
+}
+
+/**
  * Get sorted matches array (in-progress first, then by created_at desc).
  * Matches older than MATCH_MAX_AGE_SECONDS are excluded, so they drop off the
  * list as they age even while the page stays open.
@@ -73,8 +85,7 @@ export function getSortedMatches(
 	map: Map<string, MatchEvent>,
 	nowSeconds: number = Math.floor(Date.now() / 1000)
 ): MatchEvent[] {
-	const cutoff = nowSeconds - MATCH_MAX_AGE_SECONDS;
-	const arr = Array.from(map.values()).filter((m) => (m.created_at ?? 0) >= cutoff);
+	const arr = Array.from(map.values()).filter((m) => isMatchFresh(m, nowSeconds));
 
 	const statusOrder: Record<string, number> = {
 		'in-progress': 0,
