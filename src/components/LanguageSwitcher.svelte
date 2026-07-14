@@ -8,8 +8,9 @@
 	 */
 	const LANGUAGE_KEYS = {
 		en: 'language.en',
-		es: 'language.es'
-	} as const satisfies Record<Locale, 'language.en' | 'language.es'>;
+		es: 'language.es',
+		pt: 'language.pt'
+	} as const satisfies Record<Locale, 'language.en' | 'language.es' | 'language.pt'>;
 
 	function onChange(event: Event): void {
 		setLocale((event.currentTarget as HTMLSelectElement).value as Locale);
