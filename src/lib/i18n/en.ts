@@ -91,7 +91,11 @@ export const en = {
 	'match.backToScoreboard': 'Back to scoreboard',
 
 	// ─── Errors ─────────────────────────────────────────────────────────────
+	//
+	// `+error.svelte` catches every route error, not just 404s: a 404 is "Page
+	// not found", anything else (a 500, a load that threw) is the generic line.
 	'error.pageNotFound': 'Page not found',
+	'error.somethingWrong': 'Something went wrong',
 	'error.backToScoreboard': 'Back to Scoreboard',
 
 	// ─── Page titles ────────────────────────────────────────────────────────
