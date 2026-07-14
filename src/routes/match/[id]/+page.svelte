@@ -3,7 +3,14 @@
 	import { base } from '$app/paths';
 	import { matchesMap, isMatchFresh } from '$lib/stores.js';
 	import { MATCH_AGE_CHECK_INTERVAL_MS } from '$lib/constants.js';
-	import { getF1Score, getF2Score, getLeader, getWinMethod } from '$lib/scoring.js';
+	import {
+		getF1EffectiveAdvantages,
+		getF1EffectivePoints,
+		getF2EffectiveAdvantages,
+		getF2EffectivePoints,
+		getWinMethod,
+		getWinner
+	} from '$lib/scoring.js';
 	import { alpha, sanitizeColor } from '$lib/colors.js';
 	import Timer from '../../../components/Timer.svelte';
 	import type { MatchEvent } from '$lib/types.js';
@@ -35,15 +42,26 @@
 		isMatchFresh(stored, nowSeconds) ? stored : undefined
 	);
 
-	let f1Score = $derived(match ? getF1Score(match) : 0);
-	let f2Score = $derived(match ? getF2Score(match) : 0);
+	// Effective: a penalty against the opponent has already become points — and
+	// its second one has already become an advantage. Showing the raw advantage
+	// next to an effective score would be two different matches on one screen.
+	let f1Score = $derived(match ? getF1EffectivePoints(match) : 0);
+	let f2Score = $derived(match ? getF2EffectivePoints(match) : 0);
+	let f1Adv = $derived(match ? getF1EffectiveAdvantages(match) : 0);
+	let f2Adv = $derived(match ? getF2EffectiveAdvantages(match) : 0);
 
 	let isLive = $derived(match?.status === 'in-progress');
 	let isFinal = $derived(match?.status === 'finished');
 	let showTimer = $derived(match?.status === 'waiting' || isLive);
 
-	/** 1 = fighter 1 won, 2 = fighter 2 won, 0 = draw or not finished. */
-	let winner = $derived(match && isFinal ? getLeader(match) : 0);
+	/**
+	 * 1 = fighter 1 won, 2 = fighter 2 won, 0 = draw or not finished.
+	 *
+	 * Read from the event, never derived from the numbers: a fighter can lead
+	 * 4–0 and lose to an armbar, and this page would otherwise announce the
+	 * loser — on a wall, in a room full of people.
+	 */
+	let winner = $derived(match ? getWinner(match) : 0);
 	let result = $derived(match && isFinal ? getWinMethod(match) : null);
 
 	let f1Color = $derived(sanitizeColor(match?.f1_color, DEFAULT_F1_COLOR));
@@ -152,7 +170,7 @@
 						style="background:rgba(244,180,0,.14);border:1px solid rgba(244,180,0,.45)"
 					>
 						<span class="font-bold tracking-[0.1em]" style="color:#f4b400;font-size:clamp(0.75rem,1.25vw,24px)">ADV</span>
-						<span class="font-extrabold" style="color:#ffd451;font-size:clamp(0.85rem,1.4vw,27px)">{match.f1_adv}</span>
+						<span class="font-extrabold" style="color:#ffd451;font-size:clamp(0.85rem,1.4vw,27px)">{f1Adv}</span>
 					</div>
 					<div
 						class="flex items-center gap-2 rounded-[10px] px-[1vw] py-[0.9vh]"
@@ -212,7 +230,7 @@
 						style="background:rgba(244,180,0,.14);border:1px solid rgba(244,180,0,.45)"
 					>
 						<span class="font-bold tracking-[0.1em]" style="color:#f4b400;font-size:clamp(0.75rem,1.25vw,24px)">ADV</span>
-						<span class="font-extrabold" style="color:#ffd451;font-size:clamp(0.85rem,1.4vw,27px)">{match.f2_adv}</span>
+						<span class="font-extrabold" style="color:#ffd451;font-size:clamp(0.85rem,1.4vw,27px)">{f2Adv}</span>
 					</div>
 					<div
 						class="flex items-center gap-2 rounded-[10px] px-[1vw] py-[0.9vh]"
