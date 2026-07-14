@@ -281,8 +281,13 @@
 		<div
 			class="absolute inset-y-0 left-1/2 z-[5] flex w-[28vw] max-w-[360px] -translate-x-1/2 flex-col items-center py-[5vh]"
 		>
+			<!-- The status pill has to hold a word it did not choose. English says
+			     LIVE in four letters; Spanish says EN ESPERA and Portuguese
+			     AGUARDANDO, which are two and a half times as wide. So the pill is
+			     bounded by its column (max-w-full) and the word is allowed to
+			     shrink inside it, instead of running under the fighters' names. -->
 			<div
-				class="inline-flex items-center gap-2 rounded-full px-[1.2vw] py-[1vh]"
+				class="inline-flex max-w-full items-center gap-2 rounded-full px-[1.2vw] py-[1vh]"
 				style="background:{alpha(statusColor, 0.12)};border:1px solid {alpha(statusColor, 0.5)}"
 			>
 				<span
@@ -290,7 +295,7 @@
 					style="background:{statusDot};box-shadow:0 0 14px {statusDot}"
 				></span>
 				<span
-					class="font-bold tracking-[0.16em] whitespace-nowrap"
+					class="min-w-0 truncate font-bold tracking-[0.16em]"
 					style="color:{statusColor};font-size:clamp(0.7rem,1.25vw,24px)"
 				>
 					{$t(status.label)}
