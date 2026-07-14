@@ -283,9 +283,13 @@
 		>
 			<!-- The status pill has to hold a word it did not choose. English says
 			     LIVE in four letters; Spanish says EN ESPERA and Portuguese
-			     AGUARDANDO, which are two and a half times as wide. So the pill is
-			     bounded by its column (max-w-full) and the word is allowed to
-			     shrink inside it, instead of running under the fighters' names. -->
+			     AGUARDANDO, two and a half times as wide. So the pill is bounded by
+			     its column (max-w-full) and the word truncates inside it, instead of
+			     running out under the fighters' names.
+
+			     Truncation is the last line of defence, not the plan: the length
+			     budget in i18n.test.ts is what keeps a status short enough to be
+			     read whole. -->
 			<div
 				class="inline-flex max-w-full items-center gap-2 rounded-full px-[1.2vw] py-[1vh]"
 				style="background:{alpha(statusColor, 0.12)};border:1px solid {alpha(statusColor, 0.5)}"

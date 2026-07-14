@@ -281,11 +281,11 @@ describe('the words fit on the wall', () => {
 	];
 
 	/** The abbreviations, which sit beside a number and have nowhere to grow. */
-	const ABBREVIATIONS: Record<string, number> = {
-		'score.advantageShort': 2,
-		'score.penaltyShort': 2,
-		'score.advantages': 5,
-		'score.penalties': 5
+	const ABBREVIATIONS: Record<string, { max: number; where: string }> = {
+		'score.advantageShort': { max: 2, where: 'the advantage chip on a card' },
+		'score.penaltyShort': { max: 2, where: 'the penalty chip on a card' },
+		'score.advantages': { max: 5, where: 'the ADV pill on the broadcast wall' },
+		'score.penalties': { max: 5, where: 'the PEN pill on the broadcast wall' }
 	};
 
 	for (const code of LOCALES) {
@@ -295,13 +295,18 @@ describe('the words fit on the wall', () => {
 			const tooLong: string[] = [];
 
 			for (const key of Object.keys(en) as MessageKey[]) {
-				const budget = BUDGETS.find((b) => key.startsWith(b.prefix));
-				const max = ABBREVIATIONS[key] ?? budget?.max;
-				if (max === undefined) continue;
+				const budget = Object.hasOwn(ABBREVIATIONS, key)
+					? ABBREVIATIONS[key]
+					: BUDGETS.find((b) => key.startsWith(b.prefix));
+				if (!budget) continue;
 
 				const word = say(key as 'status.live');
-				if (word.length > max) {
-					tooLong.push(`${key} = "${word}" (${word.length} > ${max})`);
+				if (word.length > budget.max) {
+					// The failure names the place, not just the number: whoever reads it
+					// has to go and look at that part of the screen.
+					tooLong.push(
+						`${key} = "${word}" is ${word.length} chars; ${budget.where} holds ${budget.max}`
+					);
 				}
 			}
 
