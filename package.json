@@ -2,6 +2,8 @@
 	"name": "choke-scoreboard",
 	"private": true,
 	"version": "0.0.1",
+	"license": "GPL-3.0-or-later",
+	"author": "ProtoLayer OÜ",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
