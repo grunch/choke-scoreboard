@@ -49,6 +49,10 @@ export const pt = defineCatalog({
 	'home.connecting': 'Conectando aos relays...',
 	'home.emptyTitle': 'Nenhuma luta encontrada',
 	'home.emptyBody': 'Aguardando eventos de luta do organizador...',
+
+	'home.filterEmptyTitle': 'Nenhuma luta para mostrar',
+	'home.filterEmptyBody':
+		'O filtro de estado está ocultando todas as lutas — ative um estado para vê-las.',
 	'home.welcomeTitle': 'Placar de lutas de BJJ',
 	'home.welcomeBody':
 		'Digite a chave pública Nostr de um organizador para acompanhar as lutas ao vivo, ou use o modo debug para ver lutas de exemplo.',
@@ -60,6 +64,9 @@ export const pt = defineCatalog({
 	'status.finished': 'ENCERRADA',
 	'status.final': 'FINAL',
 	'status.canceled': 'CANCELADA',
+
+	// ─── Filtrar a lista por estado ─────────────────────────────────────────
+	'filter.label': 'Mostrar',
 
 	// ─── O placar ───────────────────────────────────────────────────────────
 	'score.vs': 'VS',

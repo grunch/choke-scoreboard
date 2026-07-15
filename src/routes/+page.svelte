@@ -1,18 +1,31 @@
 <script lang="ts">
 	import PubkeyInput from '../components/PubkeyInput.svelte';
 	import MatchCard from '../components/MatchCard.svelte';
-	import { matchesMap, viewMode, isLoading, activePubkey, getSortedMatches } from '$lib/stores.js';
+	import StatusFilter from '../components/StatusFilter.svelte';
+	import {
+		matchesMap,
+		viewMode,
+		isLoading,
+		activePubkey,
+		statusFilter,
+		getSortedMatches
+	} from '$lib/stores.js';
 	import { MATCH_AGE_CHECK_INTERVAL_MS } from '$lib/constants.js';
 	import { t } from '$lib/i18n/index.js';
-	import type { MatchEvent, ViewMode } from '$lib/types.js';
+	import type { MatchEvent, MatchStatus, ViewMode } from '$lib/types.js';
 
 	let allMatches = $state<Map<string, MatchEvent>>(new Map());
 	let nowSeconds = $state(Math.floor(Date.now() / 1000));
 	let loading = $state(false);
 	let connected = $state(false);
 	let currentViewMode = $state<ViewMode>('compact');
+	let allowedStatuses = $state<Set<MatchStatus>>(new Set($statusFilter));
 
-	let matches = $derived(getSortedMatches(allMatches, nowSeconds));
+	let matches = $derived(getSortedMatches(allMatches, nowSeconds, allowedStatuses));
+	// Fresh matches regardless of the status filter. When this is > 0 but `matches`
+	// is empty, the list is empty because the chips hid everything — not because no
+	// events arrived, which is a different (and misleading) message.
+	let freshCount = $derived(getSortedMatches(allMatches, nowSeconds).length);
 
 	$effect(() => {
 		const unsub = matchesMap.subscribe((map) => {
@@ -50,6 +63,13 @@
 		return unsub;
 	});
 
+	$effect(() => {
+		const unsub = statusFilter.subscribe((s) => {
+			allowedStatuses = s;
+		});
+		return unsub;
+	});
+
 	function toggleViewMode(): void {
 		viewMode.update((v) => (v === 'compact' ? 'broadcast' : 'compact'));
 	}
@@ -77,11 +97,23 @@
 			</button>
 		</div>
 
+		<!-- Status filter -->
+		<StatusFilter />
+
 		{#if loading}
 			<!-- Loading spinner -->
 			<div class="flex flex-col items-center justify-center py-16">
 				<div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" style="border-color: var(--border-color); border-top-color: var(--color-green-live);"></div>
 				<p class="mt-4 text-sm" style="color: var(--text-secondary);">{$t('home.connecting')}</p>
+			</div>
+		{:else if matches.length === 0 && freshCount > 0}
+			<!-- Filtered-empty state: matches exist but the status filter hides them all -->
+			<div class="flex flex-col items-center justify-center py-16">
+				<span class="text-5xl">🔍</span>
+				<p class="mt-4 text-lg font-medium" style="color: var(--text-secondary);">{$t('home.filterEmptyTitle')}</p>
+				<p class="mt-1 text-sm" style="color: var(--text-secondary);">
+					{$t('home.filterEmptyBody')}
+				</p>
 			</div>
 		{:else if matches.length === 0}
 			<!-- Empty state -->
