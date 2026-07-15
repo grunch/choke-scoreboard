@@ -53,6 +53,12 @@ export const en = {
 	'home.connecting': 'Connecting to relays...',
 	'home.emptyTitle': 'No matches found',
 	'home.emptyBody': 'Waiting for match events from the organizer...',
+
+	// The list is empty because the status filter hid everything, NOT because no
+	// events arrived — saying "waiting for events" here would be a lie in front of
+	// an operator who can see the relay is connected.
+	'home.filterEmptyTitle': 'No matches to show',
+	'home.filterEmptyBody': 'Every match is hidden by the status filter — turn a status on to see it.',
 	'home.welcomeTitle': 'BJJ Match Scoreboard',
 	'home.welcomeBody':
 		"Enter a tournament organizer's Nostr public key to subscribe to live match scores, or try Debug Mode to see example matches.",

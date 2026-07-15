@@ -22,6 +22,10 @@
 	let allowedStatuses = $state<Set<MatchStatus>>(new Set($statusFilter));
 
 	let matches = $derived(getSortedMatches(allMatches, nowSeconds, allowedStatuses));
+	// Fresh matches regardless of the status filter. When this is > 0 but `matches`
+	// is empty, the list is empty because the chips hid everything — not because no
+	// events arrived, which is a different (and misleading) message.
+	let freshCount = $derived(getSortedMatches(allMatches, nowSeconds).length);
 
 	$effect(() => {
 		const unsub = matchesMap.subscribe((map) => {
@@ -101,6 +105,15 @@
 			<div class="flex flex-col items-center justify-center py-16">
 				<div class="h-10 w-10 animate-spin rounded-full border-4 border-t-transparent" style="border-color: var(--border-color); border-top-color: var(--color-green-live);"></div>
 				<p class="mt-4 text-sm" style="color: var(--text-secondary);">{$t('home.connecting')}</p>
+			</div>
+		{:else if matches.length === 0 && freshCount > 0}
+			<!-- Filtered-empty state: matches exist but the status filter hides them all -->
+			<div class="flex flex-col items-center justify-center py-16">
+				<span class="text-5xl">🔍</span>
+				<p class="mt-4 text-lg font-medium" style="color: var(--text-secondary);">{$t('home.filterEmptyTitle')}</p>
+				<p class="mt-1 text-sm" style="color: var(--text-secondary);">
+					{$t('home.filterEmptyBody')}
+				</p>
 			</div>
 		{:else if matches.length === 0}
 			<!-- Empty state -->

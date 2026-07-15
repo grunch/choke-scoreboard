@@ -39,6 +39,10 @@ export const es = defineCatalog({
 	'home.connecting': 'Conectando a los relays...',
 	'home.emptyTitle': 'No hay luchas',
 	'home.emptyBody': 'Esperando eventos de lucha del organizador...',
+
+	'home.filterEmptyTitle': 'No hay luchas para mostrar',
+	'home.filterEmptyBody':
+		'El filtro de estado está ocultando todas las luchas — activá un estado para verlas.',
 	'home.welcomeTitle': 'Tablero de luchas de BJJ',
 	'home.welcomeBody':
 		'Ingresá la clave pública Nostr de un organizador para seguir las luchas en vivo, o probá el modo debug para ver luchas de ejemplo.',
