@@ -35,7 +35,7 @@
 		value={$locale}
 		onchange={onChange}
 		class="cursor-pointer appearance-none rounded border-0 bg-transparent pr-4 focus-visible:outline-2 focus-visible:outline-offset-2"
-		style="font-family: 'Barlow Condensed', system-ui, sans-serif; font-weight: 600; font-size: 16px; color: #c3cde4;"
+		style="font-family: 'Barlow Condensed', system-ui, sans-serif; font-weight: 600; font-size: 16px; color: var(--icon-muted);"
 	>
 		{#each LOCALES as code (code)}
 			<option value={code} style="color: #111827;">{$t(LANGUAGE_KEYS[code])}</option>
