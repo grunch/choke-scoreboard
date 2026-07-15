@@ -61,6 +61,9 @@ export const pt = defineCatalog({
 	'status.final': 'FINAL',
 	'status.canceled': 'CANCELADA',
 
+	// ─── Filtrar a lista por estado ─────────────────────────────────────────
+	'filter.label': 'Mostrar',
+
 	// ─── O placar ───────────────────────────────────────────────────────────
 	'score.vs': 'VS',
 	'score.time': 'TEMPO',

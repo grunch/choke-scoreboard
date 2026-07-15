@@ -1,18 +1,27 @@
 <script lang="ts">
 	import PubkeyInput from '../components/PubkeyInput.svelte';
 	import MatchCard from '../components/MatchCard.svelte';
-	import { matchesMap, viewMode, isLoading, activePubkey, getSortedMatches } from '$lib/stores.js';
+	import StatusFilter from '../components/StatusFilter.svelte';
+	import {
+		matchesMap,
+		viewMode,
+		isLoading,
+		activePubkey,
+		statusFilter,
+		getSortedMatches
+	} from '$lib/stores.js';
 	import { MATCH_AGE_CHECK_INTERVAL_MS } from '$lib/constants.js';
 	import { t } from '$lib/i18n/index.js';
-	import type { MatchEvent, ViewMode } from '$lib/types.js';
+	import type { MatchEvent, MatchStatus, ViewMode } from '$lib/types.js';
 
 	let allMatches = $state<Map<string, MatchEvent>>(new Map());
 	let nowSeconds = $state(Math.floor(Date.now() / 1000));
 	let loading = $state(false);
 	let connected = $state(false);
 	let currentViewMode = $state<ViewMode>('compact');
+	let allowedStatuses = $state<Set<MatchStatus>>(new Set($statusFilter));
 
-	let matches = $derived(getSortedMatches(allMatches, nowSeconds));
+	let matches = $derived(getSortedMatches(allMatches, nowSeconds, allowedStatuses));
 
 	$effect(() => {
 		const unsub = matchesMap.subscribe((map) => {
@@ -50,6 +59,13 @@
 		return unsub;
 	});
 
+	$effect(() => {
+		const unsub = statusFilter.subscribe((s) => {
+			allowedStatuses = s;
+		});
+		return unsub;
+	});
+
 	function toggleViewMode(): void {
 		viewMode.update((v) => (v === 'compact' ? 'broadcast' : 'compact'));
 	}
@@ -76,6 +92,9 @@
 				{currentViewMode === 'compact' ? $t('home.viewBroadcast') : $t('home.viewCompact')}
 			</button>
 		</div>
+
+		<!-- Status filter -->
+		<StatusFilter />
 
 		{#if loading}
 			<!-- Loading spinner -->

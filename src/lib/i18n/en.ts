@@ -68,6 +68,12 @@ export const en = {
 	'status.final': 'FINAL',
 	'status.canceled': 'CANCELED',
 
+	// ─── Filtering the list by status ───────────────────────────────────────
+	//
+	// The chips reuse the status labels above; this is only the group label that
+	// says what the row of chips does.
+	'filter.label': 'Show',
+
 	// ─── The scoreboard itself ──────────────────────────────────────────────
 	'score.vs': 'VS',
 	'score.time': 'TIME',

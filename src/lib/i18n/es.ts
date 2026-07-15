@@ -51,6 +51,9 @@ export const es = defineCatalog({
 	'status.final': 'FINAL',
 	'status.canceled': 'CANCELADA',
 
+	// ─── Filtrar la lista por estado ────────────────────────────────────────
+	'filter.label': 'Mostrar',
+
 	// ─── El tablero ─────────────────────────────────────────────────────────
 	'score.vs': 'VS',
 	'score.time': 'TIEMPO',
