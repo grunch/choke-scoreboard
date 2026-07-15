@@ -77,14 +77,20 @@
   }
 }
 
+/* Dark palette from design 2A: near-black app surface, navy cards, hairline
+   borders. The light theme below is untouched — the design is dark-first. */
 :root {
-  --bg-primary: #121A2E;
-  --bg-secondary: #1a2540;
-  --bg-card: #1a2540;
-  --bg-input: #243054;
+  --bg-primary: #0a0f1c;
+  --bg-secondary: #0c1226;
+  --bg-card: #0b1120;
+  --bg-input: #12203a;
   --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --border-color: #374151;
+  --text-secondary: #8b97b8;
+  --border-color: rgba(255, 255, 255, 0.07);
+  /* Frosted pills (language selector, theme toggle, connection bar) */
+  --pill-bg: rgba(255, 255, 255, 0.04);
+  --pill-border: rgba(255, 255, 255, 0.1);
+  --header-bg: linear-gradient(180deg, #0f1730, #0c1226);
 }
 
 :root.light {
@@ -95,6 +101,9 @@
   --text-primary: #111827;
   --text-secondary: #6b7280;
   --border-color: #d1d5db;
+  --pill-bg: #e5e7eb;
+  --pill-border: #d1d5db;
+  --header-bg: #ffffff;
 }
 
 body {

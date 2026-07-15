@@ -79,26 +79,50 @@
 	<title>{$t('title.home')}</title>
 </svelte:head>
 
-<div class="mx-auto max-w-6xl space-y-6 px-4 py-6">
+<div class="mx-auto max-w-6xl" style="padding: 26px 30px 40px;">
 	<PubkeyInput />
 
 	{#if connected}
-		<!-- View mode toggle -->
-		<div class="flex items-center justify-between">
-			<p class="text-sm" style="color: var(--text-secondary);">
-				{$t('home.matchCount', matches.length)}
-			</p>
+		<!-- Toolbar: the big count and the broadcast toggle (design 2A) -->
+		<div class="flex items-center justify-between" style="margin-top: 24px;">
+			<div class="flex items-baseline" style="gap: 10px;">
+				<span
+					style="font-family: 'Archivo', system-ui, sans-serif; font-weight: 800; font-size: 34px; line-height: 1; color: var(--text-primary);"
+					>{matches.length}</span
+				>
+				<span
+					class="uppercase"
+					style="font-family: 'Barlow Condensed', system-ui, sans-serif; font-weight: 600; font-size: 20px; line-height: 1; letter-spacing: .14em; color: #6b7890;"
+					>{$t('home.matchesWord', matches.length)}</span
+				>
+			</div>
 			<button
 				onclick={toggleViewMode}
-				class="rounded-md px-3 py-1.5 text-xs font-medium transition-colors hover:opacity-80"
-				style="background-color: var(--bg-input); color: var(--text-secondary);"
+				class="inline-flex cursor-pointer items-center transition-opacity hover:opacity-90"
+				style="gap: 9px; padding: 11px 20px; border-radius: 11px; background: linear-gradient(135deg, #a855f7, #7c3aed); border: none; font-family: 'Barlow Condensed', system-ui, sans-serif; font-weight: 700; font-size: 17px; letter-spacing: .04em; color: #fff; box-shadow: 0 8px 22px rgba(124,58,237,.4);"
 			>
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="#fff"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<rect x="2" y="7" width="20" height="14" rx="2" />
+					<path d="m17 2-5 5-5-5" />
+				</svg>
 				{currentViewMode === 'compact' ? $t('home.viewBroadcast') : $t('home.viewCompact')}
 			</button>
 		</div>
 
 		<!-- Status filter -->
-		<StatusFilter />
+		<div style="margin-top: 18px;">
+			<StatusFilter />
+		</div>
 
 		{#if loading}
 			<!-- Loading spinner -->
@@ -126,7 +150,10 @@
 			</div>
 		{:else}
 			<!-- Match list -->
-			<div class="grid gap-4 {currentViewMode === 'broadcast' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}">
+			<div
+				class="grid {currentViewMode === 'broadcast' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}"
+				style="gap: 18px; margin-top: 24px;"
+			>
 				{#each matches as match (match.id)}
 					<MatchCard {match} mode={currentViewMode} />
 				{/each}
