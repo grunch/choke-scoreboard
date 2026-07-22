@@ -3,8 +3,14 @@
 	import { page } from '$app/stores';
 	import Header from '../components/Header.svelte';
 	import { initLocale, locale, t } from '$lib/i18n/index.js';
+	import { watchFullscreen } from '$lib/fullscreen.js';
 
 	let { children } = $props();
+
+	// Fullscreen is a property of the window, not of a route: watch it once, here,
+	// so the toggle's label stays right when the user leaves fullscreen with Esc
+	// or F11 — and survives navigating from the list into a match and back.
+	$effect(() => watchFullscreen());
 
 	// Adopt the reader's language: what they chose last time, or what their
 	// browser asks for. The store starts in English because this code also runs

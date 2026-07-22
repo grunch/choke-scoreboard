@@ -20,6 +20,11 @@ export const en = {
 	'app.description': 'Real-time Brazilian Jiu-Jitsu scoring via Nostr',
 	'header.toggleTheme': 'Toggle theme',
 
+	// Fullscreen belongs to the app, not to a match: the operator hangs the whole
+	// board on the wall, usually before the first match even exists.
+	'fullscreen.enter': 'Fullscreen',
+	'fullscreen.exit': 'Exit fullscreen',
+
 	// A language is always offered in its OWN language: somebody looking for
 	// Spanish is looking for the word "Español", not for "Spanish" — they may not
 	// read the language the menu happens to be in.
@@ -117,8 +122,6 @@ export const en = {
 
 	// ─── The broadcast view ─────────────────────────────────────────────────
 	'match.back': 'Back',
-	'match.fullscreen': 'Fullscreen',
-	'match.exitFullscreen': 'Exit fullscreen',
 	'match.notFoundTitle': 'Match not found',
 	'match.notFoundBody': "This match may not exist or hasn't been loaded yet.",
 	'match.backToScoreboard': 'Back to scoreboard',

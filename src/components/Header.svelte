@@ -3,6 +3,7 @@
 	import { t } from '$lib/i18n/index.js';
 	import { base } from '$app/paths';
 	import LanguageSwitcher from './LanguageSwitcher.svelte';
+	import FullscreenToggle from './FullscreenToggle.svelte';
 
 	function toggleTheme(): void {
 		theme.update((t) => {
@@ -53,6 +54,8 @@
 
 		<div class="flex items-center gap-3">
 			<LanguageSwitcher />
+
+			<FullscreenToggle />
 
 			<button
 				onclick={toggleTheme}

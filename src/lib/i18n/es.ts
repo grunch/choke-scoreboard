@@ -13,6 +13,8 @@ export const es = defineCatalog({
 	'app.name': 'Choke Scoreboard',
 	'app.description': 'Puntuación de jiu-jitsu brasileño en tiempo real vía Nostr',
 	'header.toggleTheme': 'Cambiar tema',
+	'fullscreen.enter': 'Pantalla completa',
+	'fullscreen.exit': 'Salir de pantalla completa',
 	'header.selectLanguage': 'Idioma',
 	'language.en': 'English',
 	'language.es': 'Español',
@@ -87,8 +89,6 @@ export const es = defineCatalog({
 
 	// ─── Vista de transmisión ───────────────────────────────────────────────
 	'match.back': 'Volver',
-	'match.fullscreen': 'Pantalla completa',
-	'match.exitFullscreen': 'Salir de pantalla completa',
 	'match.notFoundTitle': 'Lucha no encontrada',
 	'match.notFoundBody': 'Puede que esta lucha no exista o que todavía no se haya cargado.',
 	'match.backToScoreboard': 'Volver al tablero',

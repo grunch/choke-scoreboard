@@ -18,6 +18,8 @@ export const pt = defineCatalog({
 	'app.name': 'Choke Scoreboard',
 	'app.description': 'Placar de jiu-jítsu brasileiro em tempo real via Nostr',
 	'header.toggleTheme': 'Alternar tema',
+	'fullscreen.enter': 'Tela cheia',
+	'fullscreen.exit': 'Sair da tela cheia',
 	'header.selectLanguage': 'Idioma',
 	'language.en': 'English',
 	'language.es': 'Español',
@@ -97,8 +99,6 @@ export const pt = defineCatalog({
 
 	// ─── Transmissão ────────────────────────────────────────────────────────
 	'match.back': 'Voltar',
-	'match.fullscreen': 'Tela cheia',
-	'match.exitFullscreen': 'Sair da tela cheia',
 	'match.notFoundTitle': 'Luta não encontrada',
 	'match.notFoundBody': 'Pode ser que esta luta não exista ou ainda não tenha sido carregada.',
 	'match.backToScoreboard': 'Voltar ao placar',
