@@ -13,6 +13,7 @@
 		isMatchPaused
 	} from '$lib/scoring.js';
 	import { alpha, sanitizeColor } from '$lib/colors.js';
+	import { isFullscreen, toggleFullscreen } from '$lib/fullscreen.js';
 	import { t } from '$lib/i18n/index.js';
 	import { formatOutcome } from '$lib/i18n/outcome.js';
 	import Timer from '../../../components/Timer.svelte';
@@ -99,32 +100,11 @@
 	let statusColor = $derived(isFinal ? winnerColor : status.color);
 	let statusDot = $derived(isFinal ? winnerColor : status.dot);
 
-	let isFullscreen = $state(false);
-
 	/** Diagonal color wash behind a half, fading out toward the center. */
 	function halfBackground(color: string, angle: number): string {
 		return `linear-gradient(${angle}deg, ${alpha(color, 0.3)}, ${alpha(color, 0.05)} 55%, transparent 78%)`;
 	}
 
-	async function toggleFullscreen(): Promise<void> {
-		try {
-			if (document.fullscreenElement) {
-				await document.exitFullscreen();
-			} else {
-				await document.documentElement.requestFullscreen();
-			}
-		} catch (err) {
-			// Browsers reject this outside a user gesture or when the API is blocked.
-			// The view already fills the viewport, so degrade quietly.
-			console.warn('Fullscreen request rejected:', err);
-		}
-	}
-
-	$effect(() => {
-		const onChange = () => (isFullscreen = !!document.fullscreenElement);
-		document.addEventListener('fullscreenchange', onChange);
-		return () => document.removeEventListener('fullscreenchange', onChange);
-	});
 </script>
 
 <svelte:head>
@@ -371,10 +351,10 @@
 
 		<button
 			type="button"
-			onclick={toggleFullscreen}
+			onclick={() => toggleFullscreen()}
 			class="absolute top-4 right-6 z-10 rounded-lg px-3 py-2 text-sm text-white/60 transition-colors hover:bg-white/10 hover:text-white"
 		>
-			{isFullscreen ? $t('match.exitFullscreen') : $t('match.fullscreen')}
+			{$isFullscreen ? $t('fullscreen.exit') : $t('fullscreen.enter')}
 		</button>
 	</div>
 {:else}
